@@ -1,9 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { assets } from "../assets/assets";
+import { useEffect, useState } from "react"; // Импортируем хуки useState и useEffect из React.
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Импортируем компоненты Link, useLocation и useNavigate из библиотеки react-router-dom для работы с маршрутизацией.
+import { assets} from "../assets/assets"; // Импортируем объект assets, содержащий пути к изображениям и другим ресурсам, из файла ../assets/assets.js.  Предполагается, что этот файл содержит определения путей к ассетам.
+import { useClerk, useUser, UserButton } from "@clerk/clerk-react"; // Импортируем хуки useClerk и useUser, а также компонент UserButton из библиотеки @clerk/clerk-react для интеграции с Clerk (сервисом аутентификации).
+//import {  } from "react"; // Закомментированный импорт. Вероятно, планировалось использовать что-то еще из React, но пока не реализовано.
+
+// Компонент SVG иконки книги. Используется для отображения в меню пользователя.
+const BookIcon = ()=>(
+    <svg className="w-4 h-4 text-gray-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm00a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
+
+    </svg>
+)
 
 
+// Основной компонент Navbar (навигационная панель).
 const Navbar = () => {
+    // Определяем массив ссылок навигации.  Каждый объект в массиве содержит имя ссылки и путь к соответствующей странице.
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Hotels', path: '/rooms' },
@@ -11,21 +23,51 @@ const Navbar = () => {
         { name: 'About', path: '/' },
     ];
 
-    
+    // Состояние для отслеживания, прокручено ли окно.  Используется для изменения стиля navbar при прокрутке.
+    const [isScrolled, setIsScrolled] = useState(false);
+    // Состояние для управления видимостью мобильного меню.
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const [isScrolled, setIsScrolled] = React.useState(false);
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    // Получаем доступ к функциям Clerk (сервис аутентификации).  openSignIn используется для открытия формы входа.
+    const {openSignIn} = useClerk()
+    // Получаем информацию о текущем пользователе из Clerk.
+    const {user} = useUser()
+    // Получаем объект useNavigate для программной навигации между страницами.
+    const navigate = useNavigate()
+    // Получаем объект location, содержащий информацию о текущем URL.
+    const location = useLocation()
 
-    React.useEffect(() => {
+    // useEffect hook:  Этот хук выполняется после каждого рендеринга компонента и используется для отслеживания прокрутки страницы и изменения состояния isScrolled.
+    useEffect(() => {
+        // Проверяем, не является ли текущий путь '/' (главная страница). Если да, то устанавливаем isScrolled в false.  Иначе - в true.
+        if(location.pathname !== '/'){
+            setIsScrolled(true);
+            return;
+        }else{
+            setIsScrolled(false)
+        }
+
+        // Устанавливаем isScrolled на основе прокрутки страницы.
+        setIsScrolled(prev => location.pathname !== '/' ? true : prev);
+
+
+        // Функция для отслеживания прокрутки страницы и обновления состояния isScrolled.
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10);
+            setIsScrolled(window.scrollY > 10); // Если прокручено более 10 пикселей, то устанавливаем isScrolled в true.
         };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
 
+        // Добавляем слушатель события scroll к окну браузера.
+        window.addEventListener("scroll", handleScroll);
+
+        // Функция очистки:  Удаляем слушатель события scroll при размонтировании компонента (чтобы избежать утечек памяти).
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [location.pathname]); 
+
+    // Возвращаем JSX-структуру компонента Navbar.
     return (
-            <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
+
+
+            <nav className={`fixed top-0 left-0  w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
 
                 {/* Logo */}
                 <Link to='/'>
@@ -34,52 +76,71 @@ const Navbar = () => {
 
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-4 lg:gap-8">
-                    {navLinks.map((link, i) => (
-                        <a key={i} href={link.path} className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"}`}>
+                    {navLinks.map((link, i) => ( // Перебираем массив navLinks и создаем ссылку для каждой ссылки.
+                        <a key={i} href={link.path} className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"}`}> {/* Класс group используется для стилизации hover эффекта */}
                             {link.name}
-                            <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
+                            <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} /> {/* Подчеркивание при наведении */}
                         </a>
                     ))}
-                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`}>
+                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={()=> navigate('/owner')}> {/* Кнопка Dashboard */}
                         Dashboard
                     </button>
                 </div>
 
                 {/* Desktop Right */}
                 <div className="hidden md:flex items-center gap-4">
-                    <img src={assets.searchIcon} alt="search"  className={`${isScrolled && 'invert'} h-7 transition-all duration-500`} />
-                    <button className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 ${isScrolled ? "text-white bg-black" : "bg-white text-black"}`}>
-                        Login
-                    </button>
+                    <img src={assets.searchIcon} alt="search" className={`${isScrolled && 'invert'} h-7 transition-all duration-500`} />
+
+                    {user ?  // Условный рендеринг элементов авторизации, если пользователь залогинен.
+                        (<UserButton>
+                            <UserButton.MenuItems>
+                                <UserButton.Action label="My Bookings" labelIcon ={<BookIcon />} onClick={()=> navigate('/my-bookings')}/>
+                            </UserButton.MenuItems>
+                        </UserButton>)
+                        :
+                        (<button onClick={openSignIn} className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 ${isScrolled ? "text-white bg-black" : "bg-white text-black"}`}> {/* Кнопка Login */}
+                            Login
+                        </button>)
+                    }
                 </div>
 
                 {/* Mobile Menu Button */}
                 <div className="flex items-center gap-3 md:hidden">
-                    <img onClick={()=> setIsMenuOpen(!isMenuOpen)} src={assets.menuIcon} alt="" className={`${isScrolled && "invert"} h-4`}/>
+                    {user && <UserButton>
+                        <UserButton.MenuItems>
+                            <UserButton.Action label="My Bookings" labelIcon ={<BookIcon />} onClick={()=> navigate('/my-bookings')}/>
+                        </UserButton.MenuItems>
+                    </UserButton>}
+                    <img onClick={()=> setIsMenuOpen(!isMenuOpen)} src={assets.menuIcon} alt="" className={`${isScrolled && "invert"} h-4`} />
                 </div>
 
                 {/* Mobile Menu */}
-                <div className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-gray-800 transition-all duration-500 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
-                    <button className="absolute top-4 right-4" onClick={() => setIsMenuOpen(false)}>
-                        <img src={assets.closeIcon} alt="close-menu" className="h-6.5" />
+                <div className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-gray-800 transition-all duration-500 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}> {/* Анимация открытия/закрытия меню */}
+                    <button className="absolute top-4 right-4" onClick={() => setIsMenuOpen(false)}> {/* Кнопка закрытия мобильного меню */}
+                        <img src={assets.closeIcon} alt="close-menu" className="h-6.5"/>
                     </button>
 
-                    {navLinks.map((link, i) => (
-                        <a key={i} href={link.path} onClick={() => setIsMenuOpen(false)}>
+                    {navLinks.map((link, i) => ( // Перебираем массив navLinks и создаем ссылки для мобильного меню.
+                        <a key={i} href={link.path} onClick={() => setIsMenuOpen(false)}> {/* Закрываем меню при клике на ссылку */}
                             {link.name}
                         </a>
                     ))}
 
-                    <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">
+                    {user && <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={()=> navigate('/owner')}> {/* Кнопка Dashboard в мобильном меню */}
                         Dashboard
-                    </button>
+                    </button>}
 
-                    <button className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500">
+                    {!user && <button onClick={openSignIn} className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500">
                         Login
-                    </button>
+                    </button>}
                 </div>
             </nav>
     );
-}
+};
 
-export default Navbar
+export default Navbar; // Экспортируем компонент Navbar для использования в других частях приложения.
+
+
+/*
+
+ */
