@@ -18,7 +18,7 @@ const FeaturedDestination = () => {
         ))}
       </div>
 
-      <button onClick={()=>{navigate('/tooms'); scrollTo(0,0)}}
+      <button onClick={()=>{navigate('/rooms'); scrollTo(0,0)}}
       className='my-16 px-4 py-2 text-sm font-medium border border-gray-300 rounded bg-white hover:bg-gray-50 transition-all cursor-pointer'>
         View ALL Destinations
       </button>  
