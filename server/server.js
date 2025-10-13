@@ -8,18 +8,14 @@ import clerkWebhooks from "./controllers/clerkWebhooks.js" // Обработчи
 import userRouter from "./routes/userRoutes.js" // Роутер для работы с пользователями
 import cookieParser from "cookie-parser"
 
-// Инициализация приложения
-const app = express()
-
-// Middleware для разрешения кросс-доменных запросов
-// Позволяет обрабатывать запросы с других доменов
-app.use(cors()) //Enable Cross-Origin Resource Sharing
-
-
 // Подключение к базе данных MongoDB
 connectDB()
 
-
+// Инициализация приложения
+const app = express()
+// Middleware для разрешения кросс-доменных запросов
+// Позволяет обрабатывать запросы с других доменов
+app.use(cors()) //Enable Cross-Origin Resource Sharing
 // Middleware для парсинга JSON данных из запросов
 // Преобразует тело запроса в формате JSON в JavaScript объект
 app.use(express.json())
@@ -38,8 +34,8 @@ app.get('/', (req, res)=> res.send("API is working"))
 app.use('/api/user', userRouter)
 
 // Определение порта сервера
-// Использует порт из переменной окружения PORT или 3000 по умолчанию
-const PORT = process.env.PORT || 3000
+// Использует порт из переменной окружения PORT или 80 по умолчанию
+const PORT = process.env.PORT || 80
 
 // Запуск сервера на указанном порту
 app.listen(PORT, ()=>console.log(`Server running on port ${PORT}`))
