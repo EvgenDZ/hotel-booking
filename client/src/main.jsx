@@ -5,6 +5,7 @@ import './index.css' // Глобальные стили приложения
 import App from './App.jsx' // Корневой компонент приложения
 import { BrowserRouter } from 'react-router-dom' // Router для навигации между страницами
 import { ClerkProvider } from '@clerk/clerk-react' // Провайдер аутентификации Clerk
+import { AppProvider } from './context/AppContext.jsx'
 
 // Получаем публичный ключ Clerk из переменных окружения
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -24,8 +25,9 @@ createRoot(document.getElementById('root')).render(
     >
     {/* Обеспечиваем клиентскую маршрутизацию */}
     <BrowserRouter>
-    {/* Рендерим основное приложение */}
-      <App />
+        <AppProvider>
+        <App />
+        </AppProvider>
     </BrowserRouter>
   </ClerkProvider>,
 )

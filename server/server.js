@@ -6,10 +6,14 @@ import connectDB from "./configs/db.js" // Функция подключения
 import { clerkMiddleware } from '@clerk/express' // Middleware для аутентификации через Clerk
 import clerkWebhooks from "./controllers/clerkWebhooks.js" // Обработчик вебхуков от Clerk
 import userRouter from "./routes/userRoutes.js" // Роутер для работы с пользователями
-import cookieParser from "cookie-parser"
+import hotelRouter from "./routes/hotelRoutes.js"
+import connectCloudinary from "./configs/cloudinary.js"
+import roomRouter from "./routes/roomRoutes.js"
+import bookingRouter from "./routes/bookingRoutes.js"
 
 // Подключение к базе данных MongoDB
 connectDB()
+connectCloudinary()
 
 // Инициализация приложения
 const app = express()
@@ -32,6 +36,9 @@ app.use("/api/clerk", clerkWebhooks)
 // Возвращает простой текст при обращении к корневому пути
 app.get('/', (req, res)=> res.send("API is working"))
 app.use('/api/user', userRouter)
+app.use('/api/hotels', hotelRouter)
+app.use('/api/rooms', roomRouter)
+app.use('/api/bookings', bookingRouter)
 
 // Определение порта сервера
 // Использует порт из переменной окружения PORT или 80 по умолчанию

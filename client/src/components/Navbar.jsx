@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"; // Импортируем хуки useState и useEffect из React.
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Импортируем компоненты Link, useLocation и useNavigate из библиотеки react-router-dom для работы с маршрутизацией.
+import { Link, useLocation } from "react-router-dom"; // Импортируем компоненты Link, useLocation и useNavigate из библиотеки react-router-dom для работы с маршрутизацией.
 import { assets} from "../assets/assets"; // Импортируем объект assets, содержащий пути к изображениям и другим ресурсам, из файла ../assets/assets.js.  Предполагается, что этот файл содержит определения путей к ассетам.
-import { useClerk, useUser, UserButton } from "@clerk/clerk-react"; // Импортируем хуки useClerk и useUser, а также компонент UserButton из библиотеки @clerk/clerk-react для интеграции с Clerk (сервисом аутентификации).
+import { useClerk, UserButton } from "@clerk/clerk-react"; // Импортируем хуки useClerk и useUser, а также компонент UserButton из библиотеки @clerk/clerk-react для интеграции с Clerk (сервисом аутентификации).
+import { userAppContext } from "../context/AppContext";
 //import {  } from "react"; // Закомментированный импорт. Вероятно, планировалось использовать что-то еще из React, но пока не реализовано.
 
 // Компонент SVG иконки книги. Используется для отображения в меню пользователя.
@@ -31,12 +32,12 @@ const Navbar = () => {
 
     // Получаем доступ к функциям Clerk (сервис аутентификации).  openSignIn используется для открытия формы входа.
     const {openSignIn} = useClerk()
-    // Получаем информацию о текущем пользователе из Clerk.
-    const {user} = useUser()
-    // Получаем объект useNavigate для программной навигации между страницами.
-    const navigate = useNavigate()
+    
+
     // Получаем объект location, содержащий информацию о текущем URL.
     const location = useLocation()
+
+    const {user, navigate, isOwner, setShowHotelReg } = userAppContext()
 
     // useEffect hook:  Этот хук выполняется после каждого рендеринга компонента и используется для отслеживания прокрутки страницы и изменения состояния isScrolled.
     useEffect(() => {
@@ -83,9 +84,14 @@ const Navbar = () => {
                             <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} /> {/* Подчеркивание при наведении */}
                         </a>
                     ))}
-                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={()=> navigate('/owner')}> {/* Кнопка Dashboard */}
-                        Dashboard
+                
+                { user && (
+                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={()=> isOwner ? navigate('/owner') : setShowHotelReg(true)}> {/* Кнопка Dashboard */}
+                    {isOwner ? 'Dashboard' : 'List Your Hotel'}
                     </button>
+                    )
+                }
+
                 </div>
 
                 {/* Desktop Right */}
@@ -127,8 +133,8 @@ const Navbar = () => {
                         </a>
                     ))}
 
-                    {user && <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`} onClick={()=> navigate('/owner')}> {/* Кнопка Dashboard в мобильном меню */}
-                        Dashboard
+                    {user && <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all" onClick={()=> isOwner ? navigate('/owner') : setShowHotelReg(true)}> {/* Кнопка Dashboard в мобильном меню */}
+                        {isOwner ? 'Dashboard' : 'List Your Hotel'}
                     </button>}
 
                     {!user && <button onClick={openSignIn} className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500">
