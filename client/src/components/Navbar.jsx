@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"; // Импортируем хуки 
 import { Link, useLocation } from "react-router-dom"; // Импортируем компоненты Link, useLocation и useNavigate из библиотеки react-router-dom для работы с маршрутизацией.
 import { assets} from "../assets/assets"; // Импортируем объект assets, содержащий пути к изображениям и другим ресурсам, из файла ../assets/assets.js.  Предполагается, что этот файл содержит определения путей к ассетам.
 import { useClerk, UserButton } from "@clerk/clerk-react"; // Импортируем хуки useClerk и useUser, а также компонент UserButton из библиотеки @clerk/clerk-react для интеграции с Clerk (сервисом аутентификации).
-import { userAppContext } from "../context/AppContext";
+import { useAppContext } from "../context/AppContext";
 //import {  } from "react"; // Закомментированный импорт. Вероятно, планировалось использовать что-то еще из React, но пока не реализовано.
 
 // Компонент SVG иконки книги. Используется для отображения в меню пользователя.
@@ -37,7 +37,7 @@ const Navbar = () => {
     // Получаем объект location, содержащий информацию о текущем URL.
     const location = useLocation()
 
-    const {user, navigate, isOwner, setShowHotelReg } = userAppContext()
+    const {user, navigate, isOwner, setShowHotelReg } = useAppContext()
 
     // useEffect hook:  Этот хук выполняется после каждого рендеринга компонента и используется для отслеживания прокрутки страницы и изменения состояния isScrolled.
     useEffect(() => {

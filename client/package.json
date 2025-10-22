@@ -3,12 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "proxy": "http://localhost:5000",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build:prod": "PUBLIC_URL=/ react-scripts build"
   },
+  "homepage": "/",
   "dependencies": {
     "@clerk/clerk-react": "^5.47.0",
     "@tailwindcss/vite": "^4.1.13",

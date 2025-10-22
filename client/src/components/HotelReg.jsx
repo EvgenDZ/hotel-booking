@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { assets, cities } from '../assets/assets'
-import { userAppContext } from '../context/AppContext'
+import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
 
 const HotelReg = () => {
 
-    const {setShowHotelReg, axios, getToken, setIsOwner} = userAppContext()
+    const {setShowHotelReg, axios, getToken, setIsOwner} = useAppContext()
 
     const [name, setName] = useState("")
     const [address, setAddress] = useState("")
