@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 
 const RoomDetails = () => {
     const {id} = useParams()
-    const {rooms, getToken, axios, navigate} = useAppContext()
+    const {rooms, getToken, axios, navigate, currency} = useAppContext()
     const [room, setRoom] = useState(null)
     const [mainImage, setMainImage] = useState(null)
     const [checkInDate, setCheckInDate] = useState(null)
@@ -119,7 +119,7 @@ const RoomDetails = () => {
               </div>
             </div>    
             {/* Room Price */}
-            <p className='text-2xl font-medium'>${room.pricePerNight} /night</p>       
+            <p className='text-2xl font-medium'>{currency} {room.pricePerNight} /night</p>       
         </div>
         {/* CheckIn CheckOut Form */}
         <form onSubmit={onSubmitHandler} className='flex flex-col md:flex-row items-start md:itesm-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] p-6 rounded-xl mx-auto mt-16 max-w-6xl'>
