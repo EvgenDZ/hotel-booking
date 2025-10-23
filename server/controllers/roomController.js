@@ -15,12 +15,24 @@ export const createRoom = async (req, res) =>{
 
         // upload images to cloudinary
         const uploadImages = req.files.map(async (file) => {
-            const response = await cloudinary.uploader.upload(file.path)
-            return response.secure_url
-        })
+                try {
+                    const response = await cloudinary.uploader.upload(file.path, {
+                        timeout: 30000, // таймаут 30 секунд
+                        chunk_size: 6000000 // для больших файлов
+                    })
+                    return response.secure_url
+                } catch (error) {
+                    console.error(`Ошибка загрузки: ${error.message}`)
+                    return null
+                }
+            })
         
-        // Wait for all uploads to complete
-        const images = await Promise.all(uploadImages)
+        // Фильтруем неудачные загрузки
+        const images = (await Promise.all(uploadImages)).filter(img => img !== null)
+
+        if (images.length === 0) {
+            return res.json({success: false, message: "Не удалось загрузить ни одного изображения"})
+        }
 
         await Room.create({
             hotel: hotel._id,
