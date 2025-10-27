@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@a2seven/yoo-checkout": "^1.1.4",
     "@clerk/express": "^1.7.33",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
@@ -30,5 +31,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "overrides": {
+    "axios": "^1.6.0"
   }
 }
